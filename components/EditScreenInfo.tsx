@@ -1,8 +1,8 @@
 import { StyleSheet } from 'react-native';
-
-import { ExternalLink } from './ExternalLink';
 import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
+
+const ExternalLink: any = require('./ExternalLink').ExternalLink;
 
 import Colors from '@/constants/Colors';
 
