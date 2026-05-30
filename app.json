@@ -7,8 +7,10 @@
     "icon": "./assets/images/icon.png",
     "scheme": "perfumeorganizer",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.perfumeorganizer"
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +19,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.perfumeorganizer"
     },
     "web": {
       "bundler": "metro",
@@ -34,28 +37,11 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-image",
       [
-        "@morrowdigital/watermelondb-expo-plugin"
-      ],
-      [
-        "expo-build-properties",
+        "expo-sqlite",
         {
-          "ios": {
-            "extraPods": [
-              {
-                "name": "simdjson",
-                "configurations": ["Debug", "Release"],
-                "path": "../node_modules/@nozbe/simdjson",
-                "modular_headers": true
-              }
-            ]
-          },
-          "android": {
-            "packagingOptions": {
-              "pickFirst": ["**/libc++_shared.so"]
-            }
-          }
+          "enableFTS": true,
+          "useSQLCipher": false
         }
       ]
     ],

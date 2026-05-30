@@ -6,9 +6,9 @@ sync-ready for future Nest.js backend (Phase 2).
 
 ## Stack
 
-- **Runtime:** Expo (managed workflow) + Expo Router (file-based routing)
+- **Runtime:** Expo SDK 54 (managed workflow) + Expo Router (file-based routing)
 - **Language:** TypeScript (strict mode)
-- **Database:** WatermelonDB (offline-first local DB, sync-ready)
+- **Database:** expo-sqlite + Drizzle ORM (offline-first local DB, sync-ready)
 - **State:** Zustand (client/UI state) + TanStack Query (cache/mutations/derived data)
 - **Forms:** react-hook-form + zod (always together)
 - **Styling:** NativeWind v4 (Tailwind for RN) + cva (class-variance-authority) for variants
@@ -43,12 +43,15 @@ src/
 │   ├── store.ts          # Zustand store loading catalog on init
 │   ├── search.ts         # Fuse.js setup
 │   └── index.ts
-├── db/                   # WatermelonDB (user data, mutable)
-│   ├── models/           # Model classes with decorators
-│   ├── repositories/     # Data access abstraction (Nest migration friendly)
-│   ├── migrations/
-│   ├── schema.ts
-│   └── index.ts          # Database instance
+├── db/                   # Drizzle + expo-sqlite (user data, mutable)
+│   ├── schema.ts         # Drizzle table definitions
+│   ├── index.ts          # Database instance (drizzle wrapper)
+│   ├── migrate.ts        # useMigrations hook
+│   ├── drizzle/          # Generated SQL migrations (drizzle-kit output)
+│   │   ├── 0000_*.sql    # Migration files
+│   │   ├── migrations.js # Auto-generated migrations bundle
+│   │   └── meta/         # Drizzle metadata
+│   └── repositories/     # Data access abstraction (Nest migration friendly)
 └── lib/                  # Global config
     ├── theme.ts          # Theme tokens
     ├── env.ts            # Typed env vars
@@ -61,10 +64,10 @@ src/
 - **Features are self-contained.** Internal files are private; the only entry point
   for other features is `index.ts`.
 - **Catalog vs Acervo separation.** Catalog (read-only, JSON in-memory) is separate
-  from user data (read-write, WatermelonDB). Different storage for different
+  from user data (read-write, SQLite via Drizzle). Different storage for different
   lifecycles.
 - **Repository pattern over DB.** Features access data via repositories, never
-  WatermelonDB directly. This isolates persistence for Phase 2 (Nest backend).
+  Drizzle directly. This isolates persistence for Phase 2 (Nest backend).
 - **Sync-ready from day 1.** UUIDs as PKs, timestamps everywhere, soft delete,
   even though sync is Phase 2.
 
@@ -79,16 +82,20 @@ src/
 - Inferred types: PascalCase (`PerfumeFormData`)
 - Repositories: kebab-case (`perfume-repository.ts`)
 
-### Database (WatermelonDB)
-- **IDs:** UUIDs (strings), generated client-side
+### Database (Drizzle + expo-sqlite)
+- **IDs:** UUIDs (text/string), generated client-side
 - **Required columns on every table:** `created_at`, `updated_at`, `deleted_at` (soft delete)
-- **Decorators:** `@text` (strings), `@field` (numbers/booleans), `@date` (dates),
-  `@json` (arrays/objects), `@relation` (belongs-to), `@children` (has-many),
-  `@readonly` for auto-managed timestamps
-- **Schema location:** `src/db/schema.ts`
-- **Models location:** `src/db/models/`
-- **Access pattern:** features → repositories → models. Never features → models directly.
-- **Migrations:** every schema change bumps version + migration file
+- **Schema location:** `src/db/schema.ts` (Drizzle table definitions)
+- **Database instance:** `src/db/index.ts` exports `db`
+- **Migrations:** generated via `npm run db:generate` (uses drizzle-kit)
+- **Migration files:** versioned in `src/db/drizzle/` and committed to Git
+- **Access pattern:** features → repositories → drizzle queries. Never features → db directly.
+- **Reactivity:** `useLiveQuery` from `drizzle-orm/expo-sqlite` for auto-updating queries
+- **Visualization:** `npm run db:studio` opens Drizzle Studio for inspection
+- **Timestamps:** stored as `integer({ mode: 'timestamp_ms' })`, defaulted via SQL
+  `(unixepoch() * 1000)`
+- **Booleans:** stored as `integer({ mode: 'boolean' })`
+- **Enums:** stored as `text({ enum: [...] })` for type safety
 
 ### Features
 - Each feature **must** have an `index.ts` exporting its public API
@@ -112,10 +119,11 @@ src/
 - Component variants via `cva`
 - Theme tokens defined in `tailwind.config.js` — **no magic values**
 - Use semantic tokens (`bg-primary`, `text-foreground`), not raw colors (`bg-[#123]`)
-- Typography: serif for headings (perfume identity), sans-serif for body
+- Typography: design system to be finalized (Editorial Moderno is a strong candidate)
 
 ### State management
-- **Persisted data:** WatermelonDB observables (via repositories/hooks)
+- **Persisted data:** Drizzle queries via repositories/hooks
+- **Reactive data:** `useLiveQuery` from Drizzle for auto-updating UI
 - **Derived/computed data:** TanStack Query
 - **UI state (modals, selections, filters):** Zustand stores
 - **Form state:** react-hook-form
@@ -134,13 +142,13 @@ The app organizes user perfume collections. Key entities:
 | Entity | Storage | Purpose |
 |---|---|---|
 | `CatalogPerfume` | JSON in-memory | Read-only reference (Sauvage, Bleu, etc) |
-| `Perfume` | WatermelonDB | A specific bottle the user owns |
-| `Impression` | WatermelonDB | Free-form dated observations about a perfume |
-| `WearSession` | WatermelonDB | Structured wear log (longevity, projection, sillage) |
-| `PerfumePhoto` | WatermelonDB | User photos of their bottles |
-| `Sample` | WatermelonDB | Small format (samples, decants), separate from Perfume |
-| `WishlistItem` | WatermelonDB | Desired perfumes |
-| `Tag` + `PerfumeTag` | WatermelonDB | Free-form tagging system |
+| `Perfume` | SQLite (Drizzle) | A specific bottle the user owns |
+| `Impression` | SQLite (Drizzle) | Free-form dated observations about a perfume |
+| `WearSession` | SQLite (Drizzle) | Structured wear log (longevity, projection, sillage) |
+| `PerfumePhoto` | SQLite (Drizzle) | User photos of their bottles |
+| `Sample` | SQLite (Drizzle) | Small format (samples, decants), separate from Perfume |
+| `WishlistItem` | SQLite (Drizzle) | Desired perfumes |
+| `Tag` + `PerfumeTag` | SQLite (Drizzle) | Free-form tagging system |
 
 ### Important domain modeling decisions
 
@@ -157,6 +165,39 @@ The app organizes user perfume collections. Key entities:
 - **`fill_level` is manual input:** not computed from wear sessions (atomizers
   vary, users forget to log, complexity not worth it).
 
+## Architectural decisions log
+
+Key technical decisions taken and why. New decisions should be appended here
+with rationale.
+
+### Why Drizzle + expo-sqlite (not WatermelonDB)
+Originally planned to use WatermelonDB for its reactive observables. Hit
+incompatibility issues with Expo SDK new architecture — WatermelonDB still
+relies on a community config plugin (`@morrowdigital/watermelondb-expo-plugin`)
+in beta status, and the new architecture introduced JSI conflicts that required
+multiple workarounds.
+
+Switched to expo-sqlite (Expo first-party, zero config) + Drizzle ORM
+(type-safe, SQL migrations versioned in Git, modern DX). Reactivity is handled
+via `useLiveQuery` from `drizzle-orm/expo-sqlite`, which fulfills the same role
+as WatermelonDB observables. For a personal collection app with hundreds-to-low-
+thousands of records, performance is equivalent.
+
+Trade-offs: Drizzle has less "name recognition" than WatermelonDB in some
+circles, but appears much more in 2026 job listings. SQL migrations as files
+also create a clearer schema history in Git, which is portfolio-positive.
+
+### Why Expo SDK 54 (not the latest 56)
+SDK 56 requires Swift 6.2, which only ships with Xcode 26 (currently in beta as
+of project start). Local dev environment uses Xcode 16.4 (Swift 6.1). Production
+projects typically run 1-2 SDKs behind latest; SDK 54 is stable, mature, and
+fully compatible. Upgrading to 56 is a future task once Xcode 26 reaches stable.
+
+### Why offline-first first, sync later
+Phase 1 ships a fully functional local app to validate product. Phase 2 adds
+Nest.js backend with sync. Schema is designed sync-ready (UUIDs, timestamps,
+soft delete) so Phase 2 is additive, not destructive.
+
 ## Skills usage policy
 
 The project uses external skills (technical quality) and custom skills (project
@@ -169,14 +210,18 @@ conventions). Both live in `.claude/skills/`.
 | `react-native-best-practices` | Callstack | Performance, threading, bundle size, native modules, Hermes, TTI |
 | `react-native-testing` | Callstack | Writing or reviewing tests with React Native Testing Library |
 | `vercel-react-native-skills` | Vercel Labs | List rendering, animations, mobile UX optimization |
+| `frontend-design` | Anthropic | Visual quality, typography, color, spacing decisions |
 
 ### Custom skills (project-specific)
 
 | Skill | When it applies |
 |---|---|
 | `feature-creator` | Scaffold new feature modules |
-| `db-model-creator` | New WatermelonDB models and schema changes |
+| `db-model-creator` | New Drizzle tables and schema changes |
 | `form-builder` | react-hook-form + zod form creation |
+| `ui-component-creator` | Design system primitives in `shared/ui/` |
+| `zod-schema-creator` | New validation schemas (PT-BR messages) |
+| `commit-helper` | Generate conventional commit messages |
 
 ### Conflict resolution
 
@@ -201,8 +246,10 @@ If a conflict is ambiguous, surface it to the user instead of choosing silently.
 - Don't use Redux
 - Don't hardcode colors, spacings, or font sizes (use theme tokens)
 - Don't skip soft delete columns on new tables
-- Don't use auto-increment IDs (always UUIDs)
+- Don't use auto-increment IDs (always UUIDs as text)
 - Don't mix catalog data with user data in the same storage
+- Don't edit migration files manually after they've been committed; create a new
+  migration via `npm run db:generate`
 
 ## When in doubt
 
@@ -213,12 +260,29 @@ If a conflict is ambiguous, surface it to the user instead of choosing silently.
 - Prefer denormalization when it simplifies consumption (with documented reason)
 - Surface trade-offs to the user instead of choosing silently on architectural matters
 
+## Useful commands
+
+```bash
+# Development
+npx expo start                    # Start Metro bundler
+npx expo run:ios                  # Build and run on iOS simulator
+npx expo run:android              # Build and run on Android emulator
+
+# Database
+npm run db:generate               # Generate new migration from schema changes
+npm run db:studio                 # Open Drizzle Studio (visual DB inspector)
+
+# Validation
+npx expo-doctor                   # Check project health
+npx expo install --check          # Verify Expo package versions
+```
+
 ## Phase roadmap
 
-- **Phase 1 (current):** Offline-first MVP with WatermelonDB. Bundled catalog.
-  All features working locally. Publishable to stores.
+- **Phase 1 (current):** Offline-first MVP with Drizzle + expo-sqlite. Bundled
+  catalog. All features working locally. Publishable to stores.
 - **Phase 2 (future):** Nest.js backend. Auth (likely Clerk). Catalog sync from
   server. User data sync with last-write-wins strategy. App becomes Nest API
-  client with WatermelonDB as local cache.
+  client with SQLite as local cache.
 - **Phase 3 (maybe):** Community features (sharing, reviews), advanced analytics,
   scanner, integrations.
