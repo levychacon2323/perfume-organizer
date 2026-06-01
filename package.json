@@ -52,6 +52,7 @@
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio"
   },
+  "packageManager": "pnpm@latest",
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {

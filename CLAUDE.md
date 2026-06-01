@@ -269,8 +269,8 @@ npx expo run:ios                  # Build and run on iOS simulator
 npx expo run:android              # Build and run on Android emulator
 
 # Database
-npm run db:generate               # Generate new migration from schema changes
-npm run db:studio                 # Open Drizzle Studio (visual DB inspector)
+pnpm run db:generate               # Generate new migration from schema changes
+pnpm run db:studio                 # Open Drizzle Studio (visual DB inspector)
 
 # Validation
 npx expo-doctor                   # Check project health

@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { View, Text } from 'react-native';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '../components/useColorScheme';
+import { useColorScheme } from '@/shared/hooks/useColorScheme';
 import { useDatabaseMigrations } from '@/db/migrate';
 
 export {

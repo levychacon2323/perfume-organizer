@@ -4,7 +4,7 @@ import { Text, View } from './Themed';
 
 const ExternalLink: any = require('./ExternalLink').ExternalLink;
 
-import Colors from '@/constants/Colors';
+import Colors from '@/lib/Colors';
 
 export default function EditScreenInfo({ path }: { path: string }) {
   return (
