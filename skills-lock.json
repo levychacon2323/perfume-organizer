@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "javascript-typescript-jest": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/javascript-typescript-jest/SKILL.md",
+      "computedHash": "0073d19ab0275eb6a8200aced6789a53744667bd717b5d1f44ce708a1740e5d4"
+    },
     "react-native-best-practices": {
       "source": "callstackincubator/agent-skills",
       "sourceType": "github",
@@ -13,11 +19,23 @@
       "skillPath": "skills/react-native-testing/SKILL.md",
       "computedHash": "ef0b758c3df5e9fcb7bb31a26d99e0cff6e559c92ae394d59b6db66e1450e552"
     },
+    "tanstack-query-best-practices": {
+      "source": "deckardger/tanstack-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-query/SKILL.md",
+      "computedHash": "21d2e8b7468a81d772b6527ad8ca178cc2f3f08af777bb9061333013ee88a0c9"
+    },
     "vercel-react-native-skills": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/react-native-skills/SKILL.md",
       "computedHash": "41d24eafa7c3d82e270439808f7cfbc4d51aeb2d14f2809a2267c16275784d06"
+    },
+    "zustand": {
+      "source": "lobehub/lobehub",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/zustand/SKILL.md",
+      "computedHash": "a8f77f401efe2e26bcbb0a7e0c9ecb59796524325cbe41a1a11ddb4502bc8559"
     }
   }
 }
