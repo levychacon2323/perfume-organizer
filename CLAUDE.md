@@ -201,27 +201,26 @@ soft delete) so Phase 2 is additive, not destructive.
 ## Skills usage policy
 
 The project uses external skills (technical quality) and custom skills (project
-conventions). Both live in `.claude/skills/`.
+conventions). All live in `.agents/skills/`; a subset is symlinked into `.claude/skills/`.
 
 ### External skills
 
 | Skill | Source | When it applies |
 |---|---|---|
 | `react-native-best-practices` | Callstack | Performance, threading, bundle size, native modules, Hermes, TTI |
-| `react-native-testing` | Callstack | Writing or reviewing tests with React Native Testing Library |
-| `vercel-react-native-skills` | Vercel Labs | List rendering, animations, mobile UX optimization |
-| `frontend-design` | Anthropic | Visual quality, typography, color, spacing decisions |
+| `react-native-testing` | Callstack | Writing or reviewing tests with React Native Testing Library (RNTL v13/v14) |
+| `vercel-react-native-skills` | Vercel Labs | List rendering, animations, mobile UX, images, native modals |
+| `tanstack-query-best-practices` | TanStack | Data fetching, cache strategy, mutations, query keys, optimistic updates |
+| `javascript-typescript-jest` | Community | Jest: test structure, mocking strategies, async patterns, snapshots |
+| `zustand` | LobeHub | Zustand store conventions: public/internal action hierarchy, selectors, optimistic updates |
 
 ### Custom skills (project-specific)
 
 | Skill | When it applies |
 |---|---|
-| `feature-creator` | Scaffold new feature modules |
-| `db-model-creator` | New Drizzle tables and schema changes |
-| `form-builder` | react-hook-form + zod form creation |
-| `ui-component-creator` | Design system primitives in `shared/ui/` |
-| `zod-schema-creator` | New validation schemas (PT-BR messages) |
-| `commit-helper` | Generate conventional commit messages |
+| `feature-creator` | Scaffold new feature modules under `src/features/` |
+| `db-model-creator` | New Drizzle tables, migrations, and repository scaffolding |
+| `form-builder` | react-hook-form + zod form creation with PT-BR validation messages |
 
 ### Conflict resolution
 
@@ -233,6 +232,45 @@ When external and custom skills give different guidance:
   how to write a test, how to optimize re-renders, how to animate correctly.
 
 If a conflict is ambiguous, surface it to the user instead of choosing silently.
+
+## Spec-driven development
+
+New features follow a three-phase workflow before any implementation begins:
+
+```
+PRD → Tech Spec → Tasks → Implementation
+```
+
+### Artefatos por feature
+
+Each feature lives under `tasks/prd-[feature-name]/`:
+
+| Arquivo | Gerado por | Conteúdo |
+|---|---|---|
+| `prd.md` | `prd-creator` workflow | O quê e por quê (requisitos, histórias, escopo) |
+| `techspec.md` | `techspec-creator` workflow | Como (arquitetura, componentes, interfaces, testes) |
+| `tasks.md` | `task-generator` workflow | Lista de tarefas de alto nível |
+| `N_task.md` | `task-generator` workflow | Detalhamento de cada tarefa com subtarefas e testes |
+
+### Prompts de referência
+
+Workflows estão em `.claude/workflows/` como documentos de referência. Para iniciar cada fase, copie o prompt do arquivo correspondente e cole em uma nova conversa.
+
+| Workflow | Arquivo | Quando usar |
+|---|---|---|
+| PRD Creator | `.claude/workflows/prd-creator.md` | Ao definir uma nova feature |
+| Tech Spec Creator | `.claude/workflows/techspec-creator.md` | Após o PRD aprovado |
+| Task Generator | `.claude/workflows/task-generator.md` | Após PRD + Tech Spec aprovados |
+
+### Convenções do projeto para as specs
+
+As rules em `.claude/rules/` são a referência granular usada pelos workflows:
+- `naming.md` — convenções de nomenclatura
+- `database.md` — Drizzle + expo-sqlite
+- `feature-architecture.md` — estrutura de features e domínio
+- `forms.md` — react-hook-form + zod
+- `styling.md` — NativeWind + cva + design tokens (ver também `DESIGN.md`)
+- `state-management.md` — Zustand, TanStack Query, Drizzle
 
 ## What NOT to do
 
