@@ -1,9 +1,9 @@
 import { Text, View } from 'react-native';
 
-export default function ColecaoScreen() {
+export default function CatalogoScreen() {
   return (
     <View className="flex-1 items-center justify-center bg-background">
-      <Text className="text-base text-primary">Coleção</Text>
+      <Text className="text-base text-primary">Catálogo</Text>
     </View>
   );
 }

@@ -1,18 +1,16 @@
 import '../global.css';
+import { Geist_300Light, Geist_400Regular, Geist_500Medium } from '@expo-google-fonts/geist';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { View, Text } from 'react-native';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/shared/hooks/useColorScheme';
 import { useDatabaseMigrations } from '@/db/migrate';
 
-export {
-  ErrorBoundary,
-} from 'expo-router';
+export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -20,9 +18,13 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
-  const [loaded, fontError] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  const [fontsLoaded, fontError] = useFonts({
+    Geist_300Light,
+    Geist_400Regular,
+    Geist_500Medium,
   });
   const { success: dbReady, error: dbError } = useDatabaseMigrations();
 
@@ -31,10 +33,10 @@ export default function RootLayout() {
   }, [fontError]);
 
   useEffect(() => {
-    if (loaded && dbReady) {
+    if (fontsLoaded && dbReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, dbReady]);
+  }, [fontsLoaded, dbReady]);
 
   if (dbError) {
     return (
@@ -46,7 +48,7 @@ export default function RootLayout() {
     );
   }
 
-  if (!loaded || !dbReady) {
+  if (!fontsLoaded || !dbReady) {
     return null;
   }
 
@@ -54,14 +56,12 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <QueryClientProvider client={queryClient}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
-    </ThemeProvider>
+    </QueryClientProvider>
   );
 }

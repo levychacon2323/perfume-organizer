@@ -8,28 +8,45 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Named palette
+        ink:       '#1A1A1A',
+        paper:     '#FFFFFF',
+        bone:      '#F5F5F2',
+        stone:     '#6B6B66',
+        ash:       '#D4D2CC',
+        vermilion: '#8B3A2F',
+        // Semantic tokens
+        background: '#FFFFFF',
+        foreground: '#1A1A1A',
         primary: {
-          DEFAULT: '#1A1410',
+          DEFAULT:    '#1A1A1A',
           foreground: '#FFFFFF',
         },
-        background: '#FAF7F2',
-        foreground: '#1A1410',
-        card: '#FFFFFF',
-        muted: '#F0EAE0',
-        'muted-foreground': '#6B5D52',
-        border: '#E0D6C8',
+        muted: {
+          DEFAULT:    '#F5F5F2',
+          foreground: '#6B6B66',
+        },
+        border: '#D4D2CC',
         destructive: {
-          DEFAULT: '#B23A48',
+          DEFAULT:    '#8B3A2F',
           foreground: '#FFFFFF',
         },
       },
       fontFamily: {
-        sans: ['System'],
+        light:  ['Geist_300Light'],
+        sans:   ['Geist_400Regular'],
+        medium: ['Geist_500Medium'],
+      },
+      letterSpacing: {
+        tightest: '-0.04em',
+        tighter:  '-0.02em',
+        tight:    '-0.015em',
+        label:    '0.2em',
       },
       borderRadius: {
         DEFAULT: '8px',
-        lg: '12px',
-        xl: '16px',
+        lg:      '12px',
+        xl:      '16px',
       },
     },
   },
