@@ -1,57 +1,57 @@
-# Tarefa 2.0: Criar `src/lib/` — `theme.ts`, `env.ts` e `constants.ts`
+# Task 2.0: Create `src/lib/` — `theme.ts`, `env.ts`, and `constants.ts`
 
-## Visão geral
+## Overview
 
-Cria os três arquivos de infraestrutura em `src/lib/` que eliminam magic strings e valores hardcoded do código de features. Pode ser feita em paralelo com a Tarefa 1 — não tem dependências externas.
+Creates the three infrastructure files in `src/lib/` that eliminate magic strings and hardcoded values from feature code. Can be done in parallel with Task 1 — no external dependencies.
 
 <skills>
-### Conformidade com skills
+### Skills compliance
 
-Nenhuma skill externa se aplica (arquivos de configuração TypeScript puros).
+No external skill applies (pure TypeScript configuration files).
 </skills>
 
 <requirements>
 
-- `src/lib/theme.ts` exporta objeto de cores compatível com `StyleSheet.create()`, espelhando os tokens semânticos do `tailwind.config.js`
-- `src/lib/env.ts` exporta variáveis de ambiente tipadas via `expo-constants`, com fallbacks seguros
-- `src/lib/constants.ts` exporta pelo menos `DATABASE_NAME`, `APP_NAME` e `QUERY_STALE_TIME`
-- Todos os arquivos seguem TypeScript strict (sem `any`)
-- Nenhum valor hex hardcoded nos arquivos — apenas reexportar/mapear os tokens
+- `src/lib/theme.ts` exports a color object compatible with `StyleSheet.create()`, mirroring the semantic tokens from `tailwind.config.js`
+- `src/lib/env.ts` exports typed environment variables via `expo-constants`, with safe fallbacks
+- `src/lib/constants.ts` exports at least `DATABASE_NAME`, `APP_NAME`, and `QUERY_STALE_TIME`
+- All files follow TypeScript strict mode (no `any`)
+- No hardcoded hex values in the files — only re-export/map the tokens
 
 </requirements>
 
-## Subtarefas
+## Subtasks
 
-- [ ] 2.1 Criar `src/lib/theme.ts` — objeto plano de cores com os mesmos tokens semânticos do Tailwind, para uso em `style={{ color: theme.colors.foreground }}` quando `className` não é suficiente
-- [ ] 2.2 Criar `src/lib/env.ts` — importar `Constants` de `expo-constants` e exportar `env` com `appVersion`, `isDev`, e campos expandíveis para Phase 2
-- [ ] 2.3 Criar `src/lib/constants.ts` — exportar `DATABASE_NAME` (nome do arquivo SQLite), `APP_NAME`, `QUERY_STALE_TIME` (ms)
+- [ ] 2.1 Create `src/lib/theme.ts` — flat color object with the same semantic tokens as Tailwind, for use in `style={{ color: theme.colors.foreground }}` when `className` is not sufficient
+- [ ] 2.2 Create `src/lib/env.ts` — import `Constants` from `expo-constants` and export `env` with `appVersion`, `isDev`, and fields expandable for Phase 2
+- [ ] 2.3 Create `src/lib/constants.ts` — export `DATABASE_NAME` (SQLite filename), `APP_NAME`, `QUERY_STALE_TIME` (ms)
 
-## Detalhes de implementação
+## Implementation details
 
-Ver `techspec.md` § "Principais interfaces" (blocos `theme.ts`, `env.ts`, `constants.ts`).
+See `techspec.md` § "Key Interfaces" (`theme.ts`, `env.ts`, `constants.ts` blocks).
 
-`DATABASE_NAME` deve ser o mesmo valor atualmente hardcoded em `src/db/index.ts` — verificar antes de criar.
+`DATABASE_NAME` should match the value currently hardcoded in `src/db/index.ts` — verify before creating.
 
-## Critérios de sucesso
+## Success criteria
 
-- `tsc --noEmit` passa sem erros nos três novos arquivos
-- Importar `DATABASE_NAME` de `src/lib/constants` em outro arquivo TypeScript funciona com tipagem correta
-- `theme.colors.background` retorna `'#FFFFFF'`
+- `tsc --noEmit` passes without errors on the three new files
+- Importing `DATABASE_NAME` from `src/lib/constants` in another TypeScript file works with correct typing
+- `theme.colors.background` returns `'#FFFFFF'`
 
-## Testes da tarefa
+## Task tests
 
-> Esta baseline não inclui arquivos `.test.tsx` (ver PRD § "Fora do Escopo").
+> This baseline does not include `.test.tsx` files (see PRD § "Out of Scope").
 
-- [ ] **Verificação de tipos:** `npx tsc --noEmit` sem erros
-- [ ] **Verificação de importação:** adicionar temporariamente um `console.log(env.isDev)` em `_layout.tsx` e confirmar que Metro não reporta erro de tipo
+- [ ] **Type check:** `npx tsc --noEmit` without errors
+- [ ] **Import check:** temporarily add `console.log(env.isDev)` in `_layout.tsx` and confirm Metro reports no type error
 
-## Arquivos relevantes
+## Relevant files
 
-**Criar:**
+**Create:**
 - `src/lib/theme.ts`
 - `src/lib/env.ts`
 - `src/lib/constants.ts`
 
-**Consultar (não modificar):**
-- `src/db/index.ts` — verificar o nome atual do banco de dados para usar em `DATABASE_NAME`
-- `tailwind.config.js` — tokens de cor a espelhar em `theme.ts`
+**Consult (do not modify):**
+- `src/db/index.ts` — verify the current database name to use in `DATABASE_NAME`
+- `tailwind.config.js` — color tokens to mirror in `theme.ts`

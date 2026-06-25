@@ -1,44 +1,44 @@
-# Tarefa 5.0: Remover resíduos do template Expo e limpar `app/modal.tsx`
+# Task 5.0: Remove Expo template residues and clean `app/modal.tsx`
 
-## Visão geral
+## Overview
 
-Remove os 10 arquivos do template Expo que usam padrões legados (StyleSheet hardcoded, Colors.ts, dark mode), substitui `app/modal.tsx` por um placeholder NativeWind, e verifica que zero imports quebrados existem após a limpeza.
+Removes the 10 Expo template files that use legacy patterns (hardcoded StyleSheet, Colors.ts, dark mode), replaces `app/modal.tsx` with a NativeWind placeholder, and verifies that zero broken imports remain after the cleanup.
 
-**Dependência:** Tarefas 3 e 4 concluídas — `_layout.tsx` e `(tabs)/_layout.tsx` não podem mais importar nenhum dos arquivos a deletar antes desta tarefa.
+**Dependency:** Tasks 3 and 4 completed — `_layout.tsx` and `(tabs)/_layout.tsx` must no longer import any of the files to be deleted before this task.
 
 <skills>
-### Conformidade com skills
+### Skills compliance
 
-Nenhuma skill externa se aplica (remoção de arquivos e limpeza de imports).
+No external skill applies (file deletion and import cleanup).
 </skills>
 
 <requirements>
 
-- Nenhum dos 10 arquivos listados existe após a tarefa
-- `app/modal.tsx` substituído por placeholder NativeWind (sem `StyleSheet`, sem `Themed`, sem `EditScreenInfo`)
-- Zero imports quebrados em qualquer arquivo de `app/` ou `src/`
-- `src/shared/components/` contém apenas componentes que seguem NativeWind
+- None of the 10 listed files exist after the task
+- `app/modal.tsx` replaced by a NativeWind placeholder (no `StyleSheet`, no `Themed`, no `EditScreenInfo`)
+- Zero broken imports in any file under `app/` or `src/`
+- `src/shared/components/` contains only components that follow NativeWind
 
 </requirements>
 
-## Subtarefas
+## Subtasks
 
-- [ ] 5.1 **Verificar dependências antes de deletar** — executar os greps de segurança abaixo para confirmar que nenhum arquivo fora da lista ainda importa os arquivos a remover
-- [ ] 5.2 Deletar `app/(tabs)/two.tsx`
-- [ ] 5.3 Deletar `src/shared/components/EditScreenInfo.tsx`
-- [ ] 5.4 Deletar `src/shared/components/Themed.tsx`
-- [ ] 5.5 Deletar `src/shared/components/StyledText.tsx`
-- [ ] 5.6 Deletar `src/shared/components/ExternalLink.tsx`
-- [ ] 5.7 Deletar `src/lib/Colors.ts`
-- [ ] 5.8 Deletar `src/shared/hooks/useColorScheme.ts` e `useColorScheme.web.ts`
-- [ ] 5.9 Deletar `src/shared/hooks/useClientOnlyValue.ts` e `useClientOnlyValue.web.ts`
-- [ ] 5.10 Substituir `app/modal.tsx` por placeholder NativeWind mínimo (label "Modal", `bg-background`, sem `StyleSheet`)
+- [ ] 5.1 **Verify dependencies before deleting** — run the safety greps below to confirm no file outside the list still imports the files to remove
+- [ ] 5.2 Delete `app/(tabs)/two.tsx`
+- [ ] 5.3 Delete `src/shared/components/EditScreenInfo.tsx`
+- [ ] 5.4 Delete `src/shared/components/Themed.tsx`
+- [ ] 5.5 Delete `src/shared/components/StyledText.tsx`
+- [ ] 5.6 Delete `src/shared/components/ExternalLink.tsx`
+- [ ] 5.7 Delete `src/lib/Colors.ts`
+- [ ] 5.8 Delete `src/shared/hooks/useColorScheme.ts` and `useColorScheme.web.ts`
+- [ ] 5.9 Delete `src/shared/hooks/useClientOnlyValue.ts` and `useClientOnlyValue.web.ts`
+- [ ] 5.10 Replace `app/modal.tsx` with a minimal NativeWind placeholder (label "Modal", `bg-background`, no `StyleSheet`)
 
-## Detalhes de implementação
+## Implementation details
 
-Ver `techspec.md` § "Arquivos relevantes e dependentes" (lista completa de arquivos a deletar) e § "Riscos conhecidos" (grep de segurança recomendado).
+See `techspec.md` § "Relevant and Dependent Files" (full delete list) and § "Known Risks" (recommended safety greps).
 
-**Greps de segurança a executar antes de cada deleção:**
+**Safety greps to run before each deletion:**
 ```bash
 grep -r "from '@/lib/Colors'" app/ src/
 grep -r "from '@/shared/components/Themed'" app/ src/
@@ -47,35 +47,35 @@ grep -r "from '@/shared/components/ExternalLink'" app/ src/
 grep -r "from '@/shared/hooks/useColorScheme'" app/ src/
 grep -r "from '@/shared/hooks/useClientOnlyValue'" app/ src/
 ```
-Cada grep deve retornar vazio antes de deletar o arquivo correspondente.
+Each grep must return empty before deleting the corresponding file.
 
-**Placeholder para `app/modal.tsx`:**
+**Placeholder for `app/modal.tsx`:**
 ```tsx
-// View flex-1 bg-background centralizada
-// Text "Modal" em text-primary
-// Sem StatusBar customizada, sem StyleSheet
+// flex-1 bg-background centered View
+// "Modal" label in text-primary
+// No custom StatusBar, no StyleSheet
 ```
 
-**`app/(tabs)/two.tsx`** já não tem rota registrada após a Tarefa 4 — pode ser deletado sem impacto na navegação.
+**`app/(tabs)/two.tsx`** has no registered route after Task 4 — can be deleted without navigation impact.
 
-## Critérios de sucesso
+## Success criteria
 
-- `find src/ app/ -name "Colors.ts" -o -name "Themed.tsx" -o -name "EditScreenInfo.tsx" -o -name "StyledText.tsx" -o -name "ExternalLink.tsx"` retorna vazio
-- `find src/shared/hooks -name "useColorScheme*" -o -name "useClientOnlyValue*"` retorna vazio
-- `npx expo start` sem erros após a limpeza
-- `grep -r "StyleSheet" app/modal.tsx` retorna vazio
+- `find src/ app/ -name "Colors.ts" -o -name "Themed.tsx" -o -name "EditScreenInfo.tsx" -o -name "StyledText.tsx" -o -name "ExternalLink.tsx"` returns empty
+- `find src/shared/hooks -name "useColorScheme*" -o -name "useClientOnlyValue*"` returns empty
+- `npx expo start` without errors after cleanup
+- `grep -r "StyleSheet" app/modal.tsx` returns empty
 
-## Testes da tarefa
+## Task tests
 
-> Esta baseline não inclui arquivos `.test.tsx` (ver PRD § "Fora do Escopo").
+> This baseline does not include `.test.tsx` files (see PRD § "Out of Scope").
 
-- [ ] **Verificação de ausência:** `find src/ app/ -name "two.tsx" -o -name "EditScreenInfo.tsx" -o -name "Themed.tsx"` retorna vazio
-- [ ] **Verificação de imports:** `grep -rn "Colors\|EditScreenInfo\|Themed\|StyledText\|ExternalLink\|useClientOnlyValue" app/ src/` retorna vazio
-- [ ] **Verificação no simulador:** abrir o app e navegar nas 3 tabs — sem crashes ou tela em branco
+- [ ] **Absence check:** `find src/ app/ -name "two.tsx" -o -name "EditScreenInfo.tsx" -o -name "Themed.tsx"` returns empty
+- [ ] **Import check:** `grep -rn "Colors\|EditScreenInfo\|Themed\|StyledText\|ExternalLink\|useClientOnlyValue" app/ src/` returns empty
+- [ ] **Simulator check:** open the app and navigate the 3 tabs — no crashes or blank screens
 
-## Arquivos relevantes
+## Relevant files
 
-**Deletar:**
+**Delete:**
 - `app/(tabs)/two.tsx`
 - `src/shared/components/EditScreenInfo.tsx`
 - `src/shared/components/Themed.tsx`
@@ -87,5 +87,5 @@ Cada grep deve retornar vazio antes de deletar o arquivo correspondente.
 - `src/shared/hooks/useClientOnlyValue.ts`
 - `src/shared/hooks/useClientOnlyValue.web.ts`
 
-**Modificar:**
-- `app/modal.tsx` — substituído por placeholder NativeWind
+**Modify:**
+- `app/modal.tsx` — replaced by NativeWind placeholder

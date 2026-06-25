@@ -1,45 +1,45 @@
-# Tarefa 3.0: Atualizar `app/_layout.tsx` — fontes Geist, QueryClientProvider, remover dark mode
+# Task 3.0: Update `app/_layout.tsx` — Geist fonts, QueryClientProvider, remove dark mode
 
-## Visão geral
+## Overview
 
-Ponto central da baseline. Substitui SpaceMono por Geist nos três pesos, inicializa o `QueryClientProvider` antes do Stack Navigator, e remove toda a infraestrutura de dark mode (ThemeProvider, useColorScheme). O comportamento de splash screen (aguardar fonte + DB) é preservado.
+The central point of the baseline. Replaces SpaceMono with Geist in three weights, initializes `QueryClientProvider` before the Stack Navigator, and removes all dark mode infrastructure (ThemeProvider, useColorScheme). The splash screen behavior (wait for font + DB) is preserved.
 
-**Dependência:** Tarefa 1 (pacote `@expo-google-fonts/geist` instalado).
+**Dependency:** Task 1 (`@expo-google-fonts/geist` package installed).
 
 <skills>
-### Conformidade com skills
+### Skills compliance
 
-- `tanstack-query-best-practices` — configuração do `QueryClient` e posicionamento do `QueryClientProvider`
-- `vercel-react-native-skills` — carregamento de fontes com `useFonts` e splash screen gate
+- `tanstack-query-best-practices` — `QueryClient` configuration and `QueryClientProvider` placement
+- `vercel-react-native-skills` — font loading with `useFonts` and splash screen gate
 </skills>
 
 <requirements>
 
-- `useFonts` carrega `Geist_300Light`, `Geist_400Regular`, `Geist_500Medium` — SpaceMono removido
-- `QueryClient` instanciado fora do componente (evita re-criação a cada render)
-- `QueryClientProvider` envolve o `Stack` (e qualquer outro provider interno)
-- `ThemeProvider` de `@react-navigation/native` removido completamente
-- Imports de `DarkTheme`, `DefaultTheme`, `useColorScheme` removidos
-- Condição de splash screen mantida: `fontsLoaded && dbReady` antes de `SplashScreen.hideAsync()`
-- `fontError` continua sendo lançado no `useEffect` (comportamento atual preservado)
-- `useDatabaseMigrations` de `src/db/migrate.ts` não é tocado
+- `useFonts` loads `Geist_300Light`, `Geist_400Regular`, `Geist_500Medium` — SpaceMono removed
+- `QueryClient` instantiated outside the component (avoids re-creation on each render)
+- `QueryClientProvider` wraps the `Stack` (and any other inner provider)
+- `ThemeProvider` from `@react-navigation/native` completely removed
+- Imports of `DarkTheme`, `DefaultTheme`, `useColorScheme` removed
+- Splash screen condition maintained: `fontsLoaded && dbReady` before `SplashScreen.hideAsync()`
+- `fontError` continues to be thrown in `useEffect` (current behavior preserved)
+- `useDatabaseMigrations` from `src/db/migrate.ts` is not touched
 
 </requirements>
 
-## Subtarefas
+## Subtasks
 
-- [ ] 3.1 Substituir o import de `useFonts` e adicionar os imports dos três pesos Geist de `@expo-google-fonts/geist`
-- [ ] 3.2 Atualizar o objeto passado a `useFonts` — remover `SpaceMono`, adicionar `Geist_300Light`, `Geist_400Regular`, `Geist_500Medium`
-- [ ] 3.3 Instanciar `QueryClient` fora do componente (nível de módulo)
-- [ ] 3.4 Remover `ThemeProvider`, `DarkTheme`, `DefaultTheme` e o import de `useColorScheme`
-- [ ] 3.5 Envolver `<Stack>` com `<QueryClientProvider client={queryClient}>`
-- [ ] 3.6 Simplificar `RootLayoutNav` — remover a referência a `colorScheme` e retornar diretamente `QueryClientProvider > Stack`
+- [ ] 3.1 Replace the `useFonts` import and add the three Geist weight imports from `@expo-google-fonts/geist`
+- [ ] 3.2 Update the object passed to `useFonts` — remove `SpaceMono`, add `Geist_300Light`, `Geist_400Regular`, `Geist_500Medium`
+- [ ] 3.3 Instantiate `QueryClient` outside the component (module level)
+- [ ] 3.4 Remove `ThemeProvider`, `DarkTheme`, `DefaultTheme`, and the `useColorScheme` import
+- [ ] 3.5 Wrap `<Stack>` with `<QueryClientProvider client={queryClient}>`
+- [ ] 3.6 Simplify `RootLayoutNav` — remove the `colorScheme` reference and return `QueryClientProvider > Stack` directly
 
-## Detalhes de implementação
+## Implementation details
 
-Ver `techspec.md` § "Visão dos componentes" (fluxo de boot) e § "Principais decisões" (dark mode removido, QueryClient defaults).
+See `techspec.md` § "Component Overview" (boot flow) and § "Key Decisions" (dark mode removed, QueryClient defaults).
 
-Ordem dos providers em `RootLayoutNav`:
+Provider order in `RootLayoutNav`:
 ```
 QueryClientProvider(client)
   └─ Stack
@@ -47,28 +47,28 @@ QueryClientProvider(client)
        └─ Stack.Screen name="modal"
 ```
 
-`QueryClient` com defaults do TanStack Query — sem customização de `staleTime` ou `retry` nesta baseline.
+`QueryClient` with TanStack Query defaults — no `staleTime` or `retry` customization in this baseline.
 
-## Critérios de sucesso
+## Success criteria
 
-- `npx expo start` sem warnings de font ou provider no console do Metro
-- Splash screen some apenas após DB migrado + fontes carregadas
-- Tela inicial exibe Geist (verificar visualmente — não mais monospace genérica)
-- Um `useQuery({ queryKey: ['test'], queryFn: () => null })` em qualquer screen não lança erro de "No QueryClient set"
+- `npx expo start` without font or provider warnings in the Metro console
+- Splash screen disappears only after DB migrated + fonts loaded
+- Home screen displays Geist (verify visually — no longer generic monospace)
+- A `useQuery({ queryKey: ['test'], queryFn: () => null })` in any screen does not throw "No QueryClient set"
 
-## Testes da tarefa
+## Task tests
 
-> Esta baseline não inclui arquivos `.test.tsx` (ver PRD § "Fora do Escopo").
+> This baseline does not include `.test.tsx` files (see PRD § "Out of Scope").
 
-- [ ] **Verificação no simulador:** abrir o app e confirmar tipografia Geist na tela de Coleção
-- [ ] **Verificação de provider:** adicionar temporariamente `useQuery({ queryKey: ['x'], queryFn: () => 'ok' })` em `app/(tabs)/index.tsx` e confirmar que não lança erro
-- [ ] **Verificação de splash:** matar e reabrir o app — splash some somente após o boot completo (DB + fonte)
+- [ ] **Simulator check:** open the app and confirm Geist typography on the Collection screen
+- [ ] **Provider check:** temporarily add `useQuery({ queryKey: ['x'], queryFn: () => 'ok' })` in `app/(tabs)/index.tsx` and confirm it does not throw
+- [ ] **Splash check:** kill and reopen the app — splash disappears only after full boot (DB + font)
 
-## Arquivos relevantes
+## Relevant files
 
-**Modificar:**
+**Modify:**
 - `app/_layout.tsx`
 
-**Consultar (não modificar):**
-- `src/db/migrate.ts` — `useDatabaseMigrations` hook (preservado)
-- `package.json` — confirmar que `@expo-google-fonts/geist` já está instalado (Tarefa 1)
+**Consult (do not modify):**
+- `src/db/migrate.ts` — `useDatabaseMigrations` hook (preserved)
+- `package.json` — confirm `@expo-google-fonts/geist` is already installed (Task 1)
